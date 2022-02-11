@@ -1,0 +1,36 @@
+{
+  "name": "blockchain2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev-test": "nodemon dev-test.js",
+    "test": "jest --watchAll",
+    "start": "node ./app",
+    "dev": "nodemon ./app",
+    "temp": "nodemon ./wallet"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Agree25/blockchain2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Agree25/blockchain2/issues"
+  },
+  "homepage": "https://github.com/Agree25/blockchain2#readme",
+  "devDependencies": {
+    "jest": "^27.4.7",
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "crypto-js": "^4.1.1",
+    "elliptic": "^6.5.4",
+    "express": "^4.17.2",
+    "uuid": "^8.3.2",
+    "ws": "^8.4.2"
+  }
+}
