@@ -1,26 +1,33 @@
 {
-  "name": "blockchain2",
+  "name": "blockchain-wallet",
   "version": "1.0.0",
-  "description": "",
+  "description": "Educational blockchain backend with wallets, signed transactions, mining, and WebSocket peers.",
   "main": "index.js",
   "scripts": {
     "dev-test": "nodemon dev-test.js",
-    "test": "jest --watchAll",
+    "test": "jest --runInBand",
     "start": "node ./app",
     "dev": "nodemon ./app",
-    "temp": "nodemon ./wallet"
+    "temp": "nodemon ./wallet",
+    "test:watch": "jest --watchAll"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Agree25/blockchain2.git"
+    "url": "git+https://github.com/Agree25/Blockchain-Wallet.git"
   },
-  "keywords": [],
+  "keywords": [
+    "blockchain",
+    "wallet",
+    "nodejs",
+    "express",
+    "websocket"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Agree25/blockchain2/issues"
+    "url": "https://github.com/Agree25/Blockchain-Wallet/issues"
   },
-  "homepage": "https://github.com/Agree25/blockchain2#readme",
+  "homepage": "https://github.com/Agree25/Blockchain-Wallet#readme",
   "devDependencies": {
     "jest": "^27.4.7",
     "nodemon": "^2.0.15"

@@ -37,7 +37,9 @@ class P2pServer {
     this.sendChain(socket);
   }
   sendChain(socket) {
-    socket.send(JSON.stringify(this.blockchain.chain));
+    socket.send(
+      JSON.stringify({ type: MESSAGE_TYPES.chain, chain: this.blockchain.chain })
+    );
   }
   messageHandler(socket) {
     socket.on("message", (message) => {
@@ -56,9 +58,7 @@ class P2pServer {
     });
   }
   syncChains() {
-    this.sockets.forEach((socket) => {
-      this.sockets.forEach((socket) => this.sendChain(socket));
-    });
+    this.sockets.forEach((socket) => this.sendChain(socket));
   }
   sendTransaction(socket, transaction) {
     socket.send(
