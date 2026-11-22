@@ -20,19 +20,17 @@ class Wallet {
   }
 
   createTransaction(recipient, amount, blockchain, transactionPool) {
+    Transaction.validateTransfer(recipient, amount);
     this.balance = this.calculateBalance(blockchain);
 
     if (amount > this.balance) {
-      console.log(
-        `Amount: ${amount} exceceds current balance: ${this.balance}`
-      );
-      return;
+      throw new RangeError("Amount exceeds available balance.");
     }
 
     let transaction = transactionPool.existingTransaction(this.publicKey);
 
     if (transaction) {
-      transaction.update(this, recipient, amount);
+      transaction = transaction.update(this, recipient, amount);
     } else {
       transaction = Transaction.newTransaction(this, recipient, amount);
       transactionPool.updateOrAddTransaction(transaction);
@@ -42,41 +40,17 @@ class Wallet {
   }
 
   calculateBalance(blockchain) {
-    let balance = this.balance;
-    let transactions = [];
-    blockchain.chain.forEach((block) =>
-      block.data.forEach((transaction) => {
-        transactions.push(transaction);
-      })
-    );
-
-    const walletInputTs = transactions.filter(
-      (transaction) => transaction.input.address === this.publicKey
-    );
-
-    let startTime = 0;
-
-    if (walletInputTs.length > 0) {
-      const recentInputT = walletInputTs.reduce((prev, current) =>
-        prev.input.timestamp > current.input.timestamp ? prev : current
-      );
-
-      balance = recentInputT.outputs.find(
-        (output) => output.address === this.publicKey
-      ).amount;
-      startTime = recentInputT.input.timestamp;
-    }
-
-    transactions.forEach((transaction) => {
-      if (transaction.input.timestamp > startTime) {
-        transaction.outputs.find((output) => {
-          if (output.address === this.publicKey) {
-            balance += output.amount;
-          }
-        });
+    // Derive from chain order on every call, including transactions with equal timestamps.
+    let balance = INITIAL_BALANCE;
+    for (const block of blockchain.chain) {
+      for (const transaction of block.data) {
+        if (!Transaction.verifyTransaction(transaction) || !Transaction.hasValidOutputs(transaction)) continue;
+        const received = transaction.outputs
+          .filter((output) => output.address === this.publicKey)
+          .reduce((sum, output) => sum + output.amount, 0);
+        balance = transaction.input.address === this.publicKey ? received : balance + received;
       }
-    });
-
+    }
     return balance;
   }
 

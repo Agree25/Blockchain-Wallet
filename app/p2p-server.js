@@ -43,7 +43,13 @@ class P2pServer {
   }
   messageHandler(socket) {
     socket.on("message", (message) => {
-      const data = JSON.parse(message);
+      let data;
+      try {
+        data = JSON.parse(message);
+      } catch {
+        return;
+      }
+      if (!data || typeof data !== "object") return;
       switch (data.type) {
         case MESSAGE_TYPES.chain:
           this.blockchain.replaceChain(data.chain);

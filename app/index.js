@@ -36,9 +36,16 @@ app.get("/transactions", (req, res) => {
 
 app.post("/transact", (req, res) => {
   const { recipient, amount } = req.body;
-  const transaction = wallet.createTransaction(recipient, amount,bc, tp);
-  p2pServer.broadcastTransaction(transaction);
-  res.redirect("/transactions");
+  try {
+    const transaction = wallet.createTransaction(recipient, amount,bc, tp);
+    p2pServer.broadcastTransaction(transaction);
+    res.redirect("/transactions");
+  } catch (error) {
+    if (error instanceof RangeError || error instanceof TypeError) {
+      return res.status(400).json({ error: error.message });
+    }
+    throw error;
+  }
 });
 
 app.get("/mine-transactions", (req, res) => {
@@ -51,5 +58,9 @@ app.get("/public-key", (req, res) => {
   res.json({ publicKey: wallet.publicKey });
 });
 
-app.listen(HTTP_PORT, () => console.log(`Listening on port ${HTTP_PORT}`));
-p2pServer.listen();
+if (require.main === module) {
+  app.listen(HTTP_PORT, () => console.log(`Listening on port ${HTTP_PORT}`));
+  p2pServer.listen();
+}
+
+module.exports = app;

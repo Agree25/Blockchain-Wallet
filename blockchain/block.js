@@ -8,7 +8,7 @@ class Block {
         this.hash = hash;
         this.data = data;
         this.nonce=nonce;
-        this.difficulty=difficulty || DIFFICULTY;
+        this.difficulty=difficulty ?? DIFFICULTY;
     }
     tostring() {
         return `Block =>
@@ -22,7 +22,7 @@ class Block {
     }
     
     static genesis(){
-        return new this("genesis timestamp","0","fhufhwfeninf",[],0);
+        return new this(0,"0","fhufhwfeninf",[],0);
     }
     static mineBlock(lastBlock,data){
         let timestamp;
@@ -32,7 +32,7 @@ class Block {
         let {difficulty}=lastBlock;
         do{
             nonce++;
-            timestamp=Date.now();
+            timestamp=Math.max(Date.now(), lastBlock.timestamp + 1);
             difficulty=this.adjustDifficulty(lastBlock,timestamp);
             hash=Block.hash(timestamp,lastHash,data,nonce,difficulty);
         }while(hash.substring(0,difficulty)!='0'.repeat(difficulty));
@@ -41,7 +41,8 @@ class Block {
         return new this(timestamp,lastHash,hash,data,nonce,difficulty);
     }
     static hash(timestamp,lastHash,data,nonce,difficulty){
-        return ChainUtil.hash(`${timestamp}${lastHash}${data}${nonce}${difficulty}`);
+        // Hash the structured payload: string interpolation loses object data.
+        return ChainUtil.hash([timestamp,lastHash,data,nonce,difficulty]);
     }
     static blockHash(block){
         const {timestamp,lastHash,data,nonce,difficulty}=block;
@@ -51,7 +52,7 @@ class Block {
     static adjustDifficulty(lastBlock,currentTime){
         let {difficulty}=lastBlock;
         difficulty=lastBlock.timestamp+MINE_RATE>currentTime? difficulty+1: difficulty-1;
-        return difficulty;
+        return Math.max(1, Math.min(64, difficulty));
     }
 }
 

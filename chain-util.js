@@ -16,7 +16,20 @@ class ChainUtil {
   }
 
   static verifySignature(publicKey, signature, dataHash) {
-    return ec.keyFromPublic(publicKey, "hex").verify(dataHash, signature);
+    try {
+      return ec.keyFromPublic(publicKey, "hex").verify(dataHash, signature);
+    } catch {
+      return false;
+    }
+  }
+
+  static isValidPublicKey(publicKey) {
+    if (typeof publicKey !== "string" || !/^(?:[a-f0-9]{66}|[a-f0-9]{130})$/i.test(publicKey)) return false;
+    try {
+      return ec.keyFromPublic(publicKey, "hex").validate().result;
+    } catch {
+      return false;
+    }
   }
 }
 

@@ -58,10 +58,12 @@ For wallet transactions, mine through `/mine-transactions`; arbitrary data accep
 | `app/` | HTTP routes, peer communication, and mining coordination. |
 | `blockchain/` | Block creation, proof of work, and chain validation. |
 | `wallet/` | Wallets, signed transactions, and the transaction pool. |
-| `tests/` | Regression checks for peer communication. |
+| `tests/` | Regression checks for wallet transfers, chain validation, HTTP endpoints, and peer communication. |
 
-Run `npm test`, or `npm run test:watch` for interactive development. GitHub Actions runs tests on pushes and pull requests.
+Run `npm test`, or `npm run test:watch` for interactive development. GitHub Actions runs tests on pushes and pull requests. Regression tests cover positive integer amounts, invalid and signed negative transfers, insufficient funds, pending-transfer updates, balance recalculation, structured data integrity, proof of work, difficulty changes, and peer synchronization.
+
+Transfers use positive safe integer units and valid wallet public keys. Invalid HTTP transfers return `400` without broadcasting or changing the pool. Chain validation verifies hashes, proof of work, difficulty and increasing timestamps. The structured hashing format changes the educational chain format; restart all local peers together when upgrading.
 
 ## Limitations
 
-This learning project keeps state in memory. Keys, balances, and the chain are not persisted across restarts. HTTP validation, consensus rules, and peer error handling are incomplete; this implementation is unsuitable for handling real funds. Dependency modernization and broader wallet/consensus tests remain future work.
+This learning project keeps state in memory. Keys, balances, and the chain are not persisted across restarts. Chain selection still uses length; complete ledger validation, mining-reward enforcement, replay/double-spend protection and network abuse controls remain incomplete. Arbitrary `/mine` payloads are not validated as wallet transactions. This implementation is unsuitable for handling real funds. Dependency modernization remains future work.
